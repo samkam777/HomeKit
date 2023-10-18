@@ -30,6 +30,7 @@
 extern "C" homekit_server_config_t config;
 extern "C" homekit_characteristic_t cha_switch_on;
 extern "C" homekit_characteristic_t cha_switch_off;
+extern "C" homekit_characteristic_t _false;
 
 
 void setup() {
@@ -64,43 +65,51 @@ void cha_switch_on_setter(const homekit_value_t value) {
 	cha_switch_on.value.bool_value = on;	//sync the value
 
   // 假设OFF的开关处于点亮true状态，同时点亮了ON开关，则将OFF开关置为false状态
-  homekit_characteristic_notify(&cha_switch_off, cha_switch_off.value);
-  // Serial.println(cha_switch_off.value.bool_value);
-  // if(cha_switch_off.value.bool_value == true){
-  //   cha_switch_off.value.bool_value = false;
-  //   homekit_characteristic_notify(&cha_switch_off, cha_switch_off.value);
-    
-  //   Serial.println(cha_switch_off.value.bool_value);
-  // }
+  homekit_characteristic_notify(&cha_switch_off, _false.value);
 	LOG_D("Switch ON: %s", on ? "ON" : "OFF");
-  LOG_D("Switch OFF: %s", cha_switch_off.value.bool_value ? "ON" : "OFF");
 
   if(on == 1){
     // 打开开关的时候执行开门操作，即轻点一下开门按钮
     // digitalWrite(PIN_SWITCH_ON, on ? HIGH : LOW);
     digitalWrite(PIN_SWITCH_ON, 1);
     // 模拟只按按钮1s
-    delay(1000);
+    delay(10);
     digitalWrite(PIN_SWITCH_ON, 0);
   }else if(on == 0){
     // 关闭开关的时候执行暂停操作，即轻点一下暂停按钮
     digitalWrite(PIN_SWITCH_STOP, 1);
     // 模拟只按按钮1s
-    delay(1000);
+    delay(10);
     digitalWrite(PIN_SWITCH_STOP, 0);
   }
+
+  homekit_characteristic_notify(&cha_switch_on, _false.value);
   
 }
 
 void cha_switch_off_setter(const homekit_value_t value) {
 	bool off = value.bool_value;
-	cha_switch_on.value.bool_value = off;	//sync the value
+	cha_switch_off.value.bool_value = off;	//sync the value
 
-  if(cha_switch_on.value.bool_value == true){
-    cha_switch_on.value.bool_value = false;
+  homekit_characteristic_notify(&cha_switch_on, _false.value);
+	LOG_D("Switch ON: %s", off ? "ON" : "OFF");
+
+  if(off == 1){
+    // 打开开关的时候执行开门操作，即轻点一下开门按钮
+    // digitalWrite(PIN_SWITCH_ON, on ? HIGH : LOW);
+    digitalWrite(PIN_SWITCH_OFF, 1);
+    // 模拟只按按钮1s
+    delay(10);
+    digitalWrite(PIN_SWITCH_OFF, 0);
+  }else if(off == 0){
+    // 关闭开关的时候执行暂停操作，即轻点一下暂停按钮
+    digitalWrite(PIN_SWITCH_STOP, 1);
+    // 模拟只按按钮1s
+    delay(10);
+    digitalWrite(PIN_SWITCH_STOP, 0);
   }
-	LOG_D("Switch OFF: %s", off ? "ON" : "OFF");
-	digitalWrite(PIN_SWITCH_OFF, off ? HIGH : LOW);
+
+  homekit_characteristic_notify(&cha_switch_off, _false.value);
 }
 
 void my_homekit_setup() {

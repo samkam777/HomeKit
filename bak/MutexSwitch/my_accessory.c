@@ -33,6 +33,9 @@ void my_accessory_identify(homekit_value_t _value) {
 homekit_characteristic_t cha_switch_on = HOMEKIT_CHARACTERISTIC_(ON, false);
 homekit_characteristic_t cha_switch_off = HOMEKIT_CHARACTERISTIC_(ON, false);
 
+// 用于设置为false状态
+homekit_characteristic_t _false = HOMEKIT_CHARACTERISTIC_(ON, false);
+
 // format: string; HAP section 9.62; max length 64
 homekit_characteristic_t cha_name_on = HOMEKIT_CHARACTERISTIC_(NAME, "Switch ON");
 homekit_characteristic_t cha_name_off = HOMEKIT_CHARACTERISTIC_(NAME, "Switch OFF");
